@@ -1,0 +1,313 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="rutas_listado" pageWidth="842" pageHeight="595" orientation="Landscape" columnWidth="782" leftMargin="30" rightMargin="30" topMargin="25" bottomMargin="25" uuid="51000000-0000-0000-0000-000000000201">
+	<property name="ireport.zoom" value="2.0"/>
+	<property name="ireport.x" value="0"/>
+	<property name="ireport.y" value="0"/>
+	<parameter name="usuarioImpresion" class="java.lang.String"/>
+	<queryString>
+		<![CDATA[SELECT
+    r.id_ruta,
+    r.nombre,
+    r.descripcion,
+    b.nombre AS nombre_barrio,
+    r.estado
+FROM ruta r
+LEFT JOIN barrio b
+    ON r.id_barrio = b.id_barrio
+ORDER BY r.id_ruta]]>
+	</queryString>
+	<field name="id_ruta" class="java.lang.Integer"/>
+	<field name="nombre" class="java.lang.String"/>
+	<field name="descripcion" class="java.lang.String"/>
+	<field name="nombre_barrio" class="java.lang.String"/>
+	<field name="estado" class="java.lang.String"/>
+	<title>
+		<band height="92">
+			<rectangle>
+				<reportElement x="0" y="0" width="782" height="4" mode="Opaque" forecolor="#1F3864" backcolor="#1F3864" uuid="836437b0-e411-4377-b316-e7372815f082"/>
+				<graphicElement>
+					<pen lineWidth="0" lineColor="#1F3864"/>
+				</graphicElement>
+			</rectangle>
+			<image scaleImage="RetainShape" hAlign="Center" vAlign="Middle">
+				<reportElement x="0" y="10" width="62" height="52" uuid="146a3af7-cc0d-4553-9f74-e529490588ed"/>
+				<imageExpression><![CDATA[Thread.currentThread().getContextClassLoader().getResourceAsStream("WEB-INF/reportes/logo.png")]]></imageExpression>
+			</image>
+			<line>
+				<reportElement x="70" y="14" width="1" height="44" forecolor="#C9D3E0" uuid="a77e467c-6619-484b-b566-47f8b2ed0151"/>
+				<graphicElement>
+					<pen lineWidth="1" lineColor="#C9D3E0"/>
+				</graphicElement>
+			</line>
+			<staticText>
+				<reportElement x="80" y="10" width="552" height="24" forecolor="#1F3864" uuid="db27c413-b0ca-494d-bf6e-bbf65af6be13"/>
+				<textElement textAlignment="Left" verticalAlignment="Middle">
+					<font fontName="Arial" size="15" isBold="true"/>
+				</textElement>
+				<text><![CDATA[REPORTE GENERAL DE RUTAS]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="80" y="34" width="552" height="12" forecolor="#2E75B6" uuid="c7db6e1a-0a8f-4239-9576-d9b0f1508c81"/>
+				<textElement textAlignment="Left" verticalAlignment="Middle">
+					<font fontName="Arial" size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[JMQ SYSTEM  ·  Gestión de Residuos  ·  Villa Elisa, Paraguay]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="80" y="47" width="552" height="13" forecolor="#595959" uuid="2143e1e0-7e73-47a3-a342-008008466fed"/>
+				<textElement textAlignment="Left" verticalAlignment="Middle">
+					<font fontName="Arial" size="8" isBold="false"/>
+				</textElement>
+				<text><![CDATA[Registro general de las rutas del sistema]]></text>
+			</staticText>
+			<rectangle radius="4">
+				<reportElement x="642" y="10" width="140" height="50" mode="Opaque" forecolor="#C9D3E0" backcolor="#EEF3F9" uuid="2b100a09-7d98-47a0-8b4f-aab33beaf86c"/>
+				<graphicElement>
+					<pen lineWidth="0.8" lineColor="#C9D3E0"/>
+				</graphicElement>
+			</rectangle>
+			<staticText>
+				<reportElement x="642" y="14" width="140" height="11" forecolor="#595959" uuid="a0bf6e2b-8104-40e1-b205-d553c2a940c9"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="Arial" size="7" isBold="true"/>
+				</textElement>
+				<text><![CDATA[FECHA DE EMISIÓN]]></text>
+			</staticText>
+			<textField isBlankWhenNull="true">
+				<reportElement x="642" y="25" width="140" height="18" forecolor="#1F3864" uuid="50074285-f5e2-4c83-adc8-d0548226d226"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="Arial" size="12" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[new java.text.SimpleDateFormat("dd/MM/yyyy").format(new java.util.Date())]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement x="642" y="43" width="140" height="13" forecolor="#595959" uuid="c4c3393f-1017-4986-ab10-39903880afa7"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="Arial" size="8" isBold="false"/>
+				</textElement>
+				<textFieldExpression><![CDATA["Hora: " + new java.text.SimpleDateFormat("HH:mm").format(new java.util.Date())]]></textFieldExpression>
+			</textField>
+			<line>
+				<reportElement x="0" y="67" width="782" height="1" forecolor="#1F3864" uuid="f2b220b7-a9af-4560-835a-52703d01712d"/>
+				<graphicElement>
+					<pen lineWidth="1.5" lineColor="#1F3864"/>
+				</graphicElement>
+			</line>
+			<line>
+				<reportElement x="0" y="70" width="782" height="1" forecolor="#2E75B6" uuid="f6d19787-30eb-4e89-89b6-1a711359f0b5"/>
+				<graphicElement>
+					<pen lineWidth="0.5" lineColor="#2E75B6"/>
+				</graphicElement>
+			</line>
+		</band>
+	</title>
+	<columnHeader>
+		<band height="34">
+			<staticText>
+				<reportElement mode="Opaque" x="0" y="0" width="45" height="30" forecolor="#FFFFFF" backcolor="#1F3864" uuid="51000000-0000-0000-0000-000000000207"/>
+				<box leftPadding="4" rightPadding="4">
+					<pen lineWidth="0.5" lineColor="#FFFFFF"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="Arial" size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[ID]]></text>
+			</staticText>
+			<staticText>
+				<reportElement mode="Opaque" x="45" y="0" width="160" height="30" forecolor="#FFFFFF" backcolor="#1F3864" uuid="51000000-0000-0000-0000-000000000208"/>
+				<box leftPadding="4" rightPadding="4">
+					<pen lineWidth="0.5" lineColor="#FFFFFF"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="Arial" size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[RUTA]]></text>
+			</staticText>
+			<staticText>
+				<reportElement mode="Opaque" x="205" y="0" width="250" height="30" forecolor="#FFFFFF" backcolor="#1F3864" uuid="51000000-0000-0000-0000-000000000209"/>
+				<box leftPadding="4" rightPadding="4">
+					<pen lineWidth="0.5" lineColor="#FFFFFF"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="Arial" size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[DESCRIPCIÓN]]></text>
+			</staticText>
+			<staticText>
+				<reportElement mode="Opaque" x="455" y="0" width="150" height="30" forecolor="#FFFFFF" backcolor="#1F3864" uuid="51000000-0000-0000-0000-000000000210"/>
+				<box leftPadding="4" rightPadding="4">
+					<pen lineWidth="0.5" lineColor="#FFFFFF"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="Arial" size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[BARRIO]]></text>
+			</staticText>
+			<staticText>
+				<reportElement mode="Opaque" x="605" y="0" width="100" height="30" forecolor="#FFFFFF" backcolor="#1F3864" uuid="51000000-0000-0000-0000-000000000211"/>
+				<box leftPadding="4" rightPadding="4">
+					<pen lineWidth="0.5" lineColor="#FFFFFF"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="Arial" size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[ESTADO]]></text>
+			</staticText>
+			<staticText>
+				<reportElement mode="Opaque" x="705" y="0" width="77" height="30" forecolor="#FFFFFF" backcolor="#1F3864" uuid="51000000-0000-0000-0000-000000000212"/>
+				<box leftPadding="4" rightPadding="4">
+					<pen lineWidth="0.5" lineColor="#FFFFFF"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="Arial" size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[REGISTRO]]></text>
+			</staticText>
+		</band>
+	</columnHeader>
+	<detail>
+		<band height="30">
+			<rectangle>
+				<reportElement x="0" y="0" width="782" height="30" mode="Opaque" forecolor="#F5F8FC" backcolor="#F5F8FC" uuid="19d30fc2-ade1-46a4-b86a-2b145293340b" stretchType="RelativeToBandHeight">
+					<printWhenExpression><![CDATA[$V{REPORT_COUNT}.intValue() % 2 == 0]]></printWhenExpression>
+				</reportElement>
+				<graphicElement>
+					<pen lineWidth="0" lineColor="#F5F8FC"/>
+				</graphicElement>
+			</rectangle>
+			<textField>
+				<reportElement x="0" y="0" width="45" height="27" forecolor="#333333" uuid="51000000-0000-0000-0000-000000000213"/>
+				<box leftPadding="4" rightPadding="4">
+					<pen lineWidth="0.3" lineColor="#D5DDE5"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="Arial" size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{id_ruta}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="45" y="0" width="160" height="27" forecolor="#333333" uuid="51000000-0000-0000-0000-000000000214"/>
+				<box leftPadding="4" rightPadding="4">
+					<pen lineWidth="0.3" lineColor="#D5DDE5"/>
+				</box>
+				<textElement verticalAlignment="Middle">
+					<font fontName="Arial" size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{nombre} == null ? "" : $F{nombre}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true">
+				<reportElement x="205" y="0" width="250" height="27" forecolor="#333333" uuid="51000000-0000-0000-0000-000000000215"/>
+				<box leftPadding="4" rightPadding="4">
+					<pen lineWidth="0.3" lineColor="#D5DDE5"/>
+				</box>
+				<textElement verticalAlignment="Middle">
+					<font fontName="Arial" size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{descripcion} == null ? "" : $F{descripcion}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="455" y="0" width="150" height="27" forecolor="#333333" uuid="51000000-0000-0000-0000-000000000216"/>
+				<box leftPadding="4" rightPadding="4">
+					<pen lineWidth="0.3" lineColor="#D5DDE5"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="Arial" size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{nombre_barrio} == null ? "" : $F{nombre_barrio}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="605" y="0" width="100" height="27" forecolor="#333333" uuid="51000000-0000-0000-0000-000000000217"/>
+				<box leftPadding="4" rightPadding="4">
+					<pen lineWidth="0.3" lineColor="#D5DDE5"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="Arial" size="8" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{estado} == null
+? "SIN ESTADO"
+: (
+    $F{estado}.toString().equalsIgnoreCase("t")
+    || $F{estado}.toString().equalsIgnoreCase("true")
+    || $F{estado}.toString().equalsIgnoreCase("activo")
+    || $F{estado}.toString().equalsIgnoreCase("a")
+    || $F{estado}.toString().equalsIgnoreCase("1")
+    ? "ACTIVO"
+    : "INACTIVO"
+)]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="705" y="0" width="77" height="27" forecolor="#333333" uuid="51000000-0000-0000-0000-000000000218"/>
+				<box leftPadding="4" rightPadding="4">
+					<pen lineWidth="0.3" lineColor="#D5DDE5"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="Arial" size="8"/>
+				</textElement>
+				<text><![CDATA[JMQ]]></text>
+			</staticText>
+		</band>
+	</detail>
+	<pageFooter>
+		<band height="55">
+			<line>
+				<reportElement x="0" y="2" width="782" height="1" forecolor="#1F3864" uuid="51000000-0000-0000-0000-000000000219"/>
+			</line>
+			<textField>
+				<reportElement x="0" y="10" width="250" height="18" forecolor="#555555" uuid="51000000-0000-0000-0000-000000000220"/>
+				<box leftPadding="4" rightPadding="4"/>
+				<textElement verticalAlignment="Middle">
+					<font fontName="Arial" size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA["Generado por: " +
+($P{usuarioImpresion} == null ? "" : $P{usuarioImpresion})]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="250" y="10" width="175" height="18" forecolor="#555555" uuid="51000000-0000-0000-0000-000000000221"/>
+				<box leftPadding="4" rightPadding="4"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="Arial" size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA["Fecha: " + new java.text.SimpleDateFormat("dd/MM/yyyy").format(new java.util.Date())]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="425" y="10" width="175" height="18" forecolor="#555555" uuid="51000000-0000-0000-0000-000000000222"/>
+				<box leftPadding="4" rightPadding="4"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="Arial" size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA["Hora: " + new java.text.SimpleDateFormat("HH:mm:ss").format(new java.util.Date())]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="600" y="10" width="182" height="18" forecolor="#555555" uuid="51000000-0000-0000-0000-000000000223"/>
+				<box leftPadding="4" rightPadding="4"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font fontName="Arial" size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA["Página " + $V{PAGE_NUMBER}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="0" y="35" width="782" height="15" uuid="51000000-0000-0000-0000-000000000224"/>
+				<box leftPadding="4" rightPadding="4"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="Arial" size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[JMQ SYSTEM | Gestión de Residuos de la Ciudad de Villa Elisa – Paraguay]]></text>
+			</staticText>
+		</band>
+	</pageFooter>
+	<summary>
+		<band height="35">
+			<line>
+				<reportElement x="0" y="1" width="782" height="1" forecolor="#D5DDE5" uuid="51000000-0000-0000-0000-000000000225"/>
+			</line>
+			<textField>
+				<reportElement x="500" y="8" width="282" height="20" forecolor="#333333" uuid="51000000-0000-0000-0000-000000000226"/>
+				<box leftPadding="4" rightPadding="4"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font fontName="Arial" size="9" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA["Total de rutas: " + $V{REPORT_COUNT}]]></textFieldExpression>
+			</textField>
+		</band>
+	</summary>
+</jasperReport>

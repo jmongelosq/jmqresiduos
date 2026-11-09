@@ -1,0 +1,325 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="informe_pendientes" pageWidth="842" pageHeight="595" orientation="Landscape" whenNoDataType="AllSectionsNoDetail" columnWidth="782" leftMargin="30" rightMargin="30" topMargin="30" bottomMargin="30" uuid="4b7c9e21-3d55-4b72-8c19-1a2f6e8d9043">
+	<property name="ireport.zoom" value="1.5"/>
+	<property name="ireport.x" value="0"/>
+	<property name="ireport.y" value="0"/>
+	<parameter name="USUARIO_IMPRESION" class="java.lang.String"/>
+	<parameter name="LOGO" class="java.io.InputStream"/>
+	<parameter name="FECHA_INICIO" class="java.sql.Date"/>
+	<parameter name="FECHA_FIN" class="java.sql.Date"/>
+	<queryString>
+		<![CDATA[SELECT
+                c.id_cliente,
+                c.nombre,
+                c.apellido,
+                c.cedula,
+                c.direccion,
+                b.nombre AS barrio,
+                COALESCE(f.total_facturado, 0) AS total_facturado,
+                COALESCE(p.total_pagado, 0) AS total_pagado,
+                CASE
+                    WHEN COALESCE(f.total_facturado, 0) > COALESCE(p.total_pagado, 0)
+                    THEN COALESCE(f.total_facturado, 0) - COALESCE(p.total_pagado, 0)
+                    ELSE 0
+                END AS saldo_pendiente,
+                CASE
+                    WHEN COALESCE(p.total_pagado, 0) > COALESCE(f.total_facturado, 0)
+                    THEN COALESCE(p.total_pagado, 0) - COALESCE(f.total_facturado, 0)
+                    ELSE 0
+                END AS excedente,
+                CASE
+                    WHEN COALESCE(f.total_facturado, 0) = 0 AND COALESCE(p.total_pagado, 0) = 0 THEN 'SIN MOVIMIENTOS'
+                    WHEN COALESCE(f.total_facturado, 0) = 0 AND COALESCE(p.total_pagado, 0) > 0 THEN 'SIN FACTURA'
+                    WHEN COALESCE(p.total_pagado, 0) = 0 THEN 'PENDIENTE'
+                    WHEN COALESCE(p.total_pagado, 0) < COALESCE(f.total_facturado, 0) THEN 'PENDIENTE'
+                    WHEN COALESCE(p.total_pagado, 0) = COALESCE(f.total_facturado, 0) THEN 'PAGADO'
+                    WHEN COALESCE(p.total_pagado, 0) > COALESCE(f.total_facturado, 0) THEN 'PAGO SUPERIOR'
+                    ELSE 'SIN MOVIMIENTOS'
+                END AS estado_cuenta
+            FROM clientes c
+            LEFT JOIN barrio b ON c.id_barrio = b.id_barrio
+            LEFT JOIN (
+                SELECT factura.id_cliente, SUM(factura.total) AS total_facturado
+                FROM factura
+                WHERE factura.estado IN ('EMITIDA', 'PAGADA')
+                  AND (CAST($P{FECHA_INICIO} AS DATE) IS NULL OR factura.fecha_emision >= CAST($P{FECHA_INICIO} AS DATE))
+                  AND (CAST($P{FECHA_FIN} AS DATE) IS NULL OR factura.fecha_emision <= CAST($P{FECHA_FIN} AS DATE))
+                GROUP BY factura.id_cliente
+            ) f ON c.id_cliente = f.id_cliente
+            LEFT JOIN (
+                SELECT factura.id_cliente, SUM(pago.monto) AS total_pagado
+                FROM pago
+                INNER JOIN factura ON factura.id_factura = pago.id_factura
+                WHERE pago.estado = 'PAGADO'
+                  AND (CAST($P{FECHA_INICIO} AS DATE) IS NULL OR factura.fecha_emision >= CAST($P{FECHA_INICIO} AS DATE))
+                  AND (CAST($P{FECHA_FIN} AS DATE) IS NULL OR factura.fecha_emision <= CAST($P{FECHA_FIN} AS DATE))
+                GROUP BY factura.id_cliente
+            ) p ON c.id_cliente = p.id_cliente
+            WHERE
+                CASE
+                    WHEN COALESCE(f.total_facturado, 0) = 0 AND COALESCE(p.total_pagado, 0) = 0 THEN 'SIN MOVIMIENTOS'
+                    WHEN COALESCE(f.total_facturado, 0) = 0 AND COALESCE(p.total_pagado, 0) > 0 THEN 'SIN FACTURA'
+                    WHEN COALESCE(p.total_pagado, 0) = 0 THEN 'PENDIENTE'
+                    WHEN COALESCE(p.total_pagado, 0) < COALESCE(f.total_facturado, 0) THEN 'PENDIENTE'
+                    WHEN COALESCE(p.total_pagado, 0) = COALESCE(f.total_facturado, 0) THEN 'PAGADO'
+                    WHEN COALESCE(p.total_pagado, 0) > COALESCE(f.total_facturado, 0) THEN 'PAGO SUPERIOR'
+                    ELSE 'SIN MOVIMIENTOS'
+                END = 'PENDIENTE'
+            ORDER BY c.apellido, c.nombre, c.id_cliente]]>
+	</queryString>
+	<field name="id_cliente" class="java.lang.Integer"/>
+	<field name="nombre" class="java.lang.String"/>
+	<field name="apellido" class="java.lang.String"/>
+	<field name="cedula" class="java.lang.String"/>
+	<field name="direccion" class="java.lang.String"/>
+	<field name="barrio" class="java.lang.String"/>
+	<field name="total_facturado" class="java.math.BigDecimal"/>
+	<field name="total_pagado" class="java.math.BigDecimal"/>
+	<field name="saldo_pendiente" class="java.math.BigDecimal"/>
+	<field name="excedente" class="java.math.BigDecimal"/>
+	<field name="estado_cuenta" class="java.lang.String"/>
+	<title>
+		<band height="100" splitType="Stretch">
+			<rectangle>
+				<reportElement mode="Opaque" x="0" y="0" width="782" height="4" forecolor="#1F3864" backcolor="#1F3864" uuid="9cbfc02e-0472-4dc6-bd70-9e524662b280"/>
+				<graphicElement>
+					<pen lineWidth="0.0" lineColor="#1F3864"/>
+				</graphicElement>
+			</rectangle>
+			<image scaleImage="RetainShape" hAlign="Center" vAlign="Middle">
+				<reportElement x="0" y="10" width="62" height="52" uuid="e246c637-c9dd-4342-8c53-717a29c239b4"/>
+				<imageExpression><![CDATA[Thread.currentThread().getContextClassLoader().getResourceAsStream("WEB-INF/reportes/logo.png")]]></imageExpression>
+			</image>
+			<line>
+				<reportElement x="70" y="14" width="1" height="44" forecolor="#C9D3E0" uuid="ceba33f9-7965-40aa-822f-566c8aded8a1"/>
+				<graphicElement>
+					<pen lineWidth="1.0" lineColor="#C9D3E0"/>
+				</graphicElement>
+			</line>
+			<staticText>
+				<reportElement x="80" y="10" width="552" height="24" forecolor="#1F3864" uuid="241953fd-1575-4fdc-985c-16a40d48b296"/>
+				<textElement textAlignment="Left" verticalAlignment="Middle">
+					<font fontName="Arial" size="13" isBold="true"/>
+				</textElement>
+				<text><![CDATA[INFORME GENERAL DE PENDIENTES]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="80" y="34" width="552" height="12" forecolor="#2E75B6" uuid="a3155706-37d1-4229-a371-ef413feffda6"/>
+				<textElement textAlignment="Left" verticalAlignment="Middle">
+					<font fontName="Arial" size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[JMQ SYSTEM  ·  Gestión de Residuos  ·  Villa Elisa, Paraguay]]></text>
+			</staticText>
+			<textField isBlankWhenNull="true">
+				<reportElement x="80" y="47" width="552" height="13" forecolor="#595959" uuid="d160d058-a5f6-462c-b985-bdff2fb653ca"/>
+				<textElement textAlignment="Left" verticalAlignment="Middle">
+					<font fontName="Arial" size="8" isBold="false"/>
+				</textElement>
+				<textFieldExpression><![CDATA["Clientes con saldo pendiente"]]></textFieldExpression>
+			</textField>
+			<rectangle radius="4">
+				<reportElement mode="Opaque" x="642" y="10" width="140" height="50" forecolor="#C9D3E0" backcolor="#EEF3F9" uuid="918e1ff6-42ad-442a-b271-7a3ec233b467"/>
+				<graphicElement>
+					<pen lineWidth="0.8" lineColor="#C9D3E0"/>
+				</graphicElement>
+			</rectangle>
+			<staticText>
+				<reportElement x="642" y="14" width="140" height="11" forecolor="#595959" uuid="54c09b01-5722-423f-bfeb-5149e15ebe5c"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="Arial" size="7" isBold="true"/>
+				</textElement>
+				<text><![CDATA[FECHA DE EMISIÓN]]></text>
+			</staticText>
+			<textField isBlankWhenNull="true">
+				<reportElement x="642" y="25" width="140" height="18" forecolor="#1F3864" uuid="09068a09-0679-40e0-8127-3008e782c8d1"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="Arial" size="12" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[new java.text.SimpleDateFormat("dd/MM/yyyy").format(new java.util.Date())]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement x="642" y="43" width="140" height="13" forecolor="#595959" uuid="724afc6b-7968-4a0a-9d96-a7b269f3190d"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="Arial" size="8" isBold="false"/>
+				</textElement>
+				<textFieldExpression><![CDATA["Hora: " + new java.text.SimpleDateFormat("HH:mm").format(new java.util.Date())]]></textFieldExpression>
+			</textField>
+			<line>
+				<reportElement x="0" y="67" width="782" height="1" forecolor="#1F3864" uuid="660daff5-37fd-48f4-b27a-f25a7ac55f6e"/>
+				<graphicElement>
+					<pen lineWidth="1.5" lineColor="#1F3864"/>
+				</graphicElement>
+			</line>
+			<line>
+				<reportElement x="0" y="70" width="782" height="1" forecolor="#2E75B6" uuid="aa064ff0-d7c0-493b-a307-cd96cd93dd88"/>
+				<graphicElement>
+					<pen lineWidth="0.5" lineColor="#2E75B6"/>
+				</graphicElement>
+			</line>
+		</band>
+	</title>
+	<columnHeader>
+		<band height="34">
+			<staticText>
+				<reportElement mode="Opaque" x="0" y="0" width="42" height="34" forecolor="#FFFFFF" backcolor="#1F3864" uuid="2b7c9e41-5d63-4a80-8f12-6c3e9b507124"/>
+				<box leftPadding="4" rightPadding="4"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="Arial" size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[ID]]></text>
+			</staticText>
+			<staticText>
+				<reportElement mode="Opaque" x="42" y="0" width="170" height="34" forecolor="#FFFFFF" backcolor="#1F3864" uuid="3c8d1f52-6e74-4b90-8a13-7d5e2c9b6041"/>
+				<box leftPadding="4" rightPadding="4"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="Arial" size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[CLIENTE]]></text>
+			</staticText>
+			<staticText>
+				<reportElement mode="Opaque" x="212" y="0" width="85" height="34" forecolor="#FFFFFF" backcolor="#1F3864" uuid="4d9e2a63-7f85-4c01-9b24-8e6f3d0a7152"/>
+				<box leftPadding="4" rightPadding="4"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="Arial" size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[CÉDULA]]></text>
+			</staticText>
+			<staticText>
+				<reportElement mode="Opaque" x="297" y="0" width="115" height="34" forecolor="#FFFFFF" backcolor="#1F3864" uuid="5e0f3b74-8a96-4d12-ac35-9f704e1b8263"/>
+				<box leftPadding="4" rightPadding="4"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="Arial" size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[BARRIO]]></text>
+			</staticText>
+			<staticText>
+				<reportElement mode="Opaque" x="412" y="0" width="92" height="34" forecolor="#FFFFFF" backcolor="#1F3864" uuid="6f1a4c85-9ba7-4e23-bd46-a0815f2c9374"/>
+				<box leftPadding="4" rightPadding="4"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="Arial" size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[FACTURADO]]></text>
+			</staticText>
+			<staticText>
+				<reportElement mode="Opaque" x="504" y="0" width="92" height="34" forecolor="#FFFFFF" backcolor="#1F3864" uuid="7a2b5d96-acb8-4f34-ce57-b1926a3d0485"/>
+				<box leftPadding="4" rightPadding="4"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="Arial" size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[PAGADO]]></text>
+			</staticText>
+			<staticText>
+				<reportElement mode="Opaque" x="596" y="0" width="105" height="34" forecolor="#FFFFFF" backcolor="#1F3864" uuid="8b3c6ea7-bdc9-4056-df68-c2037b4e1596"/>
+				<box leftPadding="4" rightPadding="4"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="Arial" size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[SALDO PENDIENTE]]></text>
+			</staticText>
+			<staticText>
+				<reportElement mode="Opaque" x="701" y="0" width="81" height="34" forecolor="#FFFFFF" backcolor="#1F3864" uuid="9c4d7fb8-ceda-4167-e079-d3148c5f2607"/>
+				<box leftPadding="4" rightPadding="4"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="Arial" size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[ESTADO]]></text>
+			</staticText>
+		</band>
+	</columnHeader>
+	<detail>
+		<band height="27" splitType="Stretch">
+			<rectangle>
+				<reportElement stretchType="RelativeToBandHeight" mode="Opaque" x="0" y="0" width="782" height="27" forecolor="#F5F8FC" backcolor="#F5F8FC" uuid="4b1e8b19-3b6d-4b52-bd11-ce368ab7adb7">
+					<printWhenExpression><![CDATA[$V{REPORT_COUNT}.intValue() % 2 == 0]]></printWhenExpression>
+				</reportElement>
+				<graphicElement>
+					<pen lineWidth="0.0" lineColor="#F5F8FC"/>
+				</graphicElement>
+			</rectangle>
+			<textField>
+				<reportElement x="0" y="0" width="42" height="27" uuid="a1d58fc9-efcb-4278-f180-e4259d603718"/>
+				<box leftPadding="4" rightPadding="4"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="Arial" size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{id_cliente}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="42" y="0" width="170" height="27" uuid="b2e69ada-f0dc-4389-a291-f536ae714829"/>
+				<box leftPadding="4" rightPadding="4"/>
+				<textElement verticalAlignment="Middle">
+					<font fontName="Arial" size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[($F{nombre} == null ? "" : $F{nombre}) + " " + ($F{apellido} == null ? "" : $F{apellido})]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="212" y="0" width="85" height="27" uuid="c3f7abeb-01ed-449a-b302-a647bf825930"/>
+				<box leftPadding="4" rightPadding="4"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="Arial" size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{cedula}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="297" y="0" width="115" height="27" uuid="d408bcfc-12fe-45aa-b413-b758c0936041"/>
+				<box leftPadding="4" rightPadding="4"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="Arial" size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{barrio}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="412" y="0" width="92" height="27" uuid="e519cd0d-23af-46bb-c524-c869d1047152"/>
+				<box leftPadding="4" rightPadding="4"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="Arial" size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{total_facturado} == null ? "" : new java.text.DecimalFormat("#,##0", new java.text.DecimalFormatSymbols(new java.util.Locale("es","PY"))).format($F{total_facturado})]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="504" y="0" width="92" height="27" uuid="f62ade1e-34b0-47cc-d635-d970e2158263"/>
+				<box leftPadding="4" rightPadding="4"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="Arial" size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{total_pagado} == null ? "" : new java.text.DecimalFormat("#,##0", new java.text.DecimalFormatSymbols(new java.util.Locale("es","PY"))).format($F{total_pagado})]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="596" y="0" width="105" height="27" uuid="0a73bf2f-45c1-48dd-e746-e0815a269374"/>
+				<box leftPadding="4" rightPadding="4"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="Arial" size="8" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{saldo_pendiente} == null ? "" : new java.text.DecimalFormat("#,##0", new java.text.DecimalFormatSymbols(new java.util.Locale("es","PY"))).format($F{saldo_pendiente})]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="701" y="0" width="81" height="27" uuid="1b84c030-56d2-49ee-f857-f1926b307485"/>
+				<box leftPadding="4" rightPadding="4"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="Arial" size="8" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{estado_cuenta}]]></textFieldExpression>
+			</textField>
+		</band>
+	</detail>
+	<pageFooter>
+		<band height="25">
+			<textField>
+				<reportElement x="0" y="3" width="400" height="18" uuid="2c95d141-67e3-4af0-89a2-03a7c4185962"/>
+				<box leftPadding="4" rightPadding="4"/>
+				<textElement verticalAlignment="Middle">
+					<font fontName="Arial" size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA["Usuario: " + $P{USUARIO_IMPRESION}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="650" y="3" width="132" height="18" uuid="3da6e252-78f4-4b01-90a3-14b8d5296073"/>
+				<box leftPadding="4" rightPadding="4"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font fontName="Arial" size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA["Página " + $V{PAGE_NUMBER}]]></textFieldExpression>
+			</textField>
+		</band>
+	</pageFooter>
+</jasperReport>
